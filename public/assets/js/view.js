@@ -22,10 +22,35 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 2500);
   }
 
-  // URLから ID と 暗号鍵（URLハッシュ）を取得
+  const viewTitle = document.getElementById('view-title');
+  const viewDesc = document.getElementById('view-desc');
+  const warningBox = document.getElementById('warning-box');
+  const warningTitleText = document.getElementById('warning-title-text');
+  const warningText = document.getElementById('warning-text');
+
+  // URLから ID、暗号鍵（ハッシュ）、消去モードを取得
   const currentUrl = new URL(window.location.href);
   const secretId = currentUrl.searchParams.get('id');
   const keyBase64 = currentUrl.hash.replace(/^#/, ''); // 先頭の # を除去
+  const burnParam = currentUrl.searchParams.get('burn');
+  const isRetainMode = burnParam === '0';
+
+  // 期限保持モードの場合、初期画面の文言とデザインを安心感のある表示に切り替え
+  if (isRetainMode) {
+    if (viewTitle) viewTitle.textContent = 'セキュアシークレットを受信しました';
+    if (viewDesc) viewDesc.textContent = '暗号化されたデータが安全に共有されています。';
+    if (warningBox) {
+      warningBox.style.background = 'rgba(6, 182, 212, 0.1)';
+      warningBox.style.borderColor = 'rgba(6, 182, 212, 0.3)';
+      warningBox.style.color = '#a5f3fc';
+    }
+    if (warningTitleText) warningTitleText.textContent = '有効期限内なら何度でも再閲覧可能';
+    if (warningText) warningText.textContent = 'このシークレットは有効期限が切れるまで、同じリンクから何度でもご確認いただけます。';
+    if (btnReveal) {
+      btnReveal.textContent = 'シークレットを表示する';
+      btnReveal.className = 'btn-primary';
+    }
+  }
 
   // エラー画面表示ヘルパー
   function showError(msg) {
@@ -41,10 +66,10 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
-  // 「シークレットを表示して破棄する」ボタンのクリック処理
+  // 「シークレットを表示する」ボタンのクリック処理
   btnReveal.addEventListener('click', async () => {
     btnReveal.disabled = true;
-    btnReveal.textContent = '復号処理中...';
+    btnReveal.textContent = isRetainMode ? '復号処理中...' : '復号および破棄処理中...';
 
     try {
       // 1. Workers API (GET /api/secret/<id>) から暗号文を取得

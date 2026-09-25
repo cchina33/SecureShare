@@ -21,3 +21,6 @@ Thumbs.db
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# 開発時の詳細ドキュメント（ローカル保持用）
+detailed_docs/

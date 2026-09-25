@@ -178,9 +178,12 @@ document.addEventListener('DOMContentLoaded', () => {
       const secretId = data.id;
 
       // 5. ゼロナレッジ受取用URLの構築 (ハッシュフラグメントに暗号鍵を格納)
-      // 形式: https://<domain>/view.html?id=<secretId>#<keyBase64>
+      // 形式: https://<domain>/view.html?id=<secretId>(&burn=0)#<keyBase64>
       const viewUrl = new URL('view.html', window.location.href);
       viewUrl.searchParams.set('id', secretId);
+      if (burnAfterRead === 0) {
+        viewUrl.searchParams.set('burn', '0');
+      }
       viewUrl.hash = keyBase64;
 
       generatedUrlInput.value = viewUrl.toString();
