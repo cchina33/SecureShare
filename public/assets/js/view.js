@@ -46,9 +46,6 @@ document.addEventListener('DOMContentLoaded', () => {
     btnReveal.textContent = '復号および破棄処理中...';
 
     try {
-      let ciphertext = '';
-      let iv = '';
-
       // 1. Workers API (GET /api/secret/<id>) から暗号文を取得
       // ※ API側で取得と同時にD1から物理削除されます
       const response = await fetch(`/api/secret/${encodeURIComponent(secretId)}`);
