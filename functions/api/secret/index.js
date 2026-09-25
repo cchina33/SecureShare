@@ -72,8 +72,8 @@ export async function onRequestPost(context) {
       );
     }
 
-    // 有効期限の計算（デフォルト24時間、最短1時間、最長7日）
-    const ttl = Number.isInteger(ttl_seconds) && ttl_seconds >= 3600 && ttl_seconds <= 604800
+    // 有効期限の計算（デフォルト24時間、最短1時間、最長30日: 2592000秒）
+    const ttl = Number.isInteger(ttl_seconds) && ttl_seconds >= 3600 && ttl_seconds <= 2592000
       ? ttl_seconds
       : 86400;
 
@@ -81,20 +81,23 @@ export async function onRequestPost(context) {
     const expiresAt = createdAt + (ttl * 1000);
     const secretId = crypto.randomUUID();
     const validatedType = content_type === 'note' ? 'note' : 'password';
+    // 消去モード: 0 (期限まで保持) または 1 (ワンタイム閲覧後即時消去)
+    const burnAfterRead = body.burn_after_read === 0 || body.burn_after_read === false ? 0 : 1;
 
     // D1 への INSERT 実行
     await env.DB.prepare(
-      `INSERT INTO secrets (id, ciphertext, iv, content_type, created_at, expires_at)
-       VALUES (?, ?, ?, ?, ?, ?)`
+      `INSERT INTO secrets (id, ciphertext, iv, content_type, created_at, expires_at, burn_after_read)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`
     )
-      .bind(secretId, ciphertext, iv, validatedType, createdAt, expiresAt)
+      .bind(secretId, ciphertext, iv, validatedType, createdAt, expiresAt, burnAfterRead)
       .run();
 
-    // 発行された ID を返却
+    // 発行された ID とメタ情報を返却
     return new Response(
       JSON.stringify({
         id: secretId,
         expires_at: expiresAt,
+        burn_after_read: burnAfterRead,
       }),
       {
         status: 201,

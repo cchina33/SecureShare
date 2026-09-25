@@ -9,7 +9,8 @@ CREATE TABLE IF NOT EXISTS secrets (
   iv TEXT NOT NULL,
   content_type TEXT NOT NULL,
   created_at INTEGER NOT NULL,
-  expires_at INTEGER NOT NULL
+  expires_at INTEGER NOT NULL,
+  burn_after_read INTEGER DEFAULT 1
 );
 
 -- 有効期限クエリ・定期削除用のインデックス

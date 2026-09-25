@@ -25,7 +25,7 @@ export async function onRequestGet(context) {
   try {
     // 1. D1 からシークレットを取得
     const record = await env.DB.prepare(
-      `SELECT ciphertext, iv, content_type, expires_at FROM secrets WHERE id = ?`
+      `SELECT ciphertext, iv, content_type, expires_at, burn_after_read FROM secrets WHERE id = ?`
     )
       .bind(secretId)
       .first();
@@ -50,15 +50,20 @@ export async function onRequestGet(context) {
       );
     }
 
-    // 3. 【ワンタイム破棄】取得と同時にD1からレコードを完全物理削除
-    await env.DB.prepare(`DELETE FROM secrets WHERE id = ?`).bind(secretId).run();
+    // 3. 【消去モード判定】ワンタイム閲覧（burn_after_read === 1 または 未設定）の場合のみ即座に完全物理削除
+    const isOneTime = record.burn_after_read === 1 || record.burn_after_read === null;
+    if (isOneTime) {
+      await env.DB.prepare(`DELETE FROM secrets WHERE id = ?`).bind(secretId).run();
+    }
 
-    // 4. クライアントへ暗号文と初期化ベクトルを返却
+    // 4. クライアントへ暗号文と初期化ベクトル、および保持モード情報を返却
     return new Response(
       JSON.stringify({
         ciphertext: record.ciphertext,
         iv: record.iv,
         content_type: record.content_type,
+        burn_after_read: isOneTime ? 1 : 0,
+        expires_at: record.expires_at,
       }),
       {
         status: 200,

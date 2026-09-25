@@ -10,10 +10,20 @@ document.addEventListener('DOMContentLoaded', () => {
   const groupNote = document.getElementById('group-note');
   const inputPassword = document.getElementById('input-password');
   const inputNote = document.getElementById('input-note');
+
+  const cardModeBurn = document.getElementById('card-mode-burn');
+  const cardModeRetain = document.getElementById('card-mode-retain');
+  const radioBurnModes = document.querySelectorAll('input[name="burn_mode"]');
+
   const selectExpire = document.getElementById('select-expire');
+  const groupCustomDays = document.getElementById('group-custom-days');
+  const inputCustomDays = document.getElementById('input-custom-days');
+
   const secretForm = document.getElementById('secret-form');
   const btnCreate = document.getElementById('btn-create');
   const resultBox = document.getElementById('result-box');
+  const resultTitle = document.getElementById('result-title');
+  const resultDesc = document.getElementById('result-desc');
   const generatedUrlInput = document.getElementById('generated-url');
   const btnCopyUrl = document.getElementById('btn-copy-url');
   const btnReset = document.getElementById('btn-reset');
@@ -53,6 +63,49 @@ document.addEventListener('DOMContentLoaded', () => {
     groupNote.style.display = 'block';
   });
 
+  // 消去モード切り替え時のUI更新
+  function updateBurnModeUI() {
+    const selectedMode = document.querySelector('input[name="burn_mode"]:checked')?.value || '1';
+    if (selectedMode === '1') {
+      cardModeBurn.style.background = 'rgba(16, 185, 129, 0.1)';
+      cardModeBurn.style.borderColor = 'var(--accent-primary)';
+      cardModeRetain.style.background = 'rgba(0, 0, 0, 0.25)';
+      cardModeRetain.style.borderColor = 'var(--border-color)';
+      btnCreate.innerHTML = `
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+        暗号化してワンタイムリンクを発行
+      `;
+    } else {
+      cardModeRetain.style.background = 'rgba(6, 182, 212, 0.1)';
+      cardModeRetain.style.borderColor = 'var(--accent-cyan)';
+      cardModeBurn.style.background = 'rgba(0, 0, 0, 0.25)';
+      cardModeBurn.style.borderColor = 'var(--border-color)';
+      btnCreate.innerHTML = `
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+        暗号化してセキュアリンクを発行
+      `;
+    }
+  }
+
+  radioBurnModes.forEach(radio => {
+    radio.addEventListener('change', updateBurnModeUI);
+  });
+
+  // 有効期限セレクタの変更時（カスタム日数表示切り替え）
+  selectExpire.addEventListener('change', () => {
+    if (selectExpire.value === 'custom') {
+      groupCustomDays.style.display = 'block';
+    } else {
+      groupCustomDays.style.display = 'none';
+    }
+  });
+
   // フォーム送信（暗号化およびリンク発行）
   secretForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -70,6 +123,19 @@ document.addEventListener('DOMContentLoaded', () => {
       alert('ボット防止認証（Turnstile）のチェックを完了してください。');
       return;
     }
+
+    // 秒数の計算
+    let ttlSeconds = 86400;
+    if (selectExpire.value === 'custom') {
+      const days = Math.min(30, Math.max(1, parseInt(inputCustomDays.value, 10) || 1));
+      ttlSeconds = days * 86400;
+    } else {
+      ttlSeconds = parseInt(selectExpire.value, 10);
+    }
+
+    // 消去モード (1: ワンタイム即座消去, 0: 期限まで保持)
+    const selectedBurnMode = document.querySelector('input[name="burn_mode"]:checked')?.value || '1';
+    const burnAfterRead = parseInt(selectedBurnMode, 10);
 
     btnCreate.disabled = true;
     btnCreate.textContent = '暗号化して発行中...';
@@ -89,8 +155,9 @@ document.addEventListener('DOMContentLoaded', () => {
         ciphertext,
         iv,
         content_type: activeMode,
-        ttl_seconds: parseInt(selectExpire.value, 10),
+        ttl_seconds: ttlSeconds,
         turnstile_token: turnstileToken,
+        burn_after_read: burnAfterRead,
       };
 
       const response = await fetch('/api/secret', {
@@ -117,6 +184,17 @@ document.addEventListener('DOMContentLoaded', () => {
       viewUrl.hash = keyBase64;
 
       generatedUrlInput.value = viewUrl.toString();
+
+      // 発行結果メッセージの更新
+      if (burnAfterRead === 1) {
+        resultTitle.textContent = '✓ ワンタイムリンクが発行されました';
+        resultDesc.textContent = 'このリンクは1度開かれると自動的に消去されます。相手に安全に伝達してください。';
+      } else {
+        const expireDateStr = new Date(data.expires_at).toLocaleString('ja-JP');
+        resultTitle.textContent = '✓ 期限保持リンクが発行されました';
+        resultDesc.textContent = `このリンクは有効期限（${expireDateStr}まで）何度でもアクセス可能です。`;
+      }
+
       resultBox.style.display = 'block';
       secretForm.style.display = 'none';
 
@@ -132,13 +210,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     } finally {
       btnCreate.disabled = false;
-      btnCreate.innerHTML = `
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-        </svg>
-        暗号化してワンタイムリンクを発行
-      `;
+      updateBurnModeUI();
     }
   });
 
@@ -147,11 +219,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!generatedUrlInput.value) return;
     try {
       await navigator.clipboard.writeText(generatedUrlInput.value);
-      showToast('ワンタイムURLをコピーしました！');
+      showToast('URLをコピーしました！');
     } catch {
       generatedUrlInput.select();
       document.execCommand('copy');
-      showToast('ワンタイムURLをコピーしました！');
+      showToast('URLをコピーしました！');
     }
   });
 

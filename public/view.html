@@ -37,19 +37,19 @@
 
       <!-- ステート1: 閲覧前の確認画面（誤クリック・破棄防止） -->
       <div id="state-confirm">
-        <h1 class="card-title">ワンタイムシークレットを受信しました</h1>
-        <p class="card-desc">このシークレットは、閲覧すると直ちにサーバー上から完全消去されます。</p>
+        <h1 class="card-title" id="view-title">シークレットを受信しました</h1>
+        <p class="card-desc" id="view-desc">このシークレットは、閲覧すると直ちにサーバー上から完全消去されます。</p>
 
-        <div class="warning-box">
-          <div class="warning-title">
+        <div class="warning-box" id="warning-box">
+          <div class="warning-title" id="warning-title">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
               <line x1="12" y1="9" x2="12" y2="13"></line>
               <line x1="12" y1="17" x2="12.01" y2="17"></line>
             </svg>
-            注意：再閲覧はできません
+            <span id="warning-title-text">注意：再閲覧はできません</span>
           </div>
-          一度「シークレットを表示する」を押すと、ページを再読み込みしても二度と復元できません。
+          <span id="warning-text">一度「シークレットを表示する」を押すと、ページを再読み込みしても二度と復元できません。</span>
         </div>
 
         <button type="button" class="btn-danger" id="btn-reveal">
@@ -60,7 +60,7 @@
       <!-- ステート2: 復号・表示画面（初期非表示） -->
       <div id="state-revealed" style="display: none;">
         <h1 class="card-title">復号されたシークレット</h1>
-        <p class="card-desc" style="color: var(--accent-danger);">
+        <p class="card-desc" id="revealed-desc" style="color: var(--accent-danger);">
           ✓ サーバーからデータは永久に削除されました。必要な場合は今すぐコピーしてください。
         </p>
 

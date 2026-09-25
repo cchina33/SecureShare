@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const errorMessage = document.getElementById('error-message');
   const btnReveal = document.getElementById('btn-reveal');
   const revealedText = document.getElementById('revealed-text');
+  const revealedDesc = document.getElementById('revealed-desc');
   const btnCopySecret = document.getElementById('btn-copy-secret');
   const toast = document.getElementById('toast');
 
@@ -43,11 +44,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // 「シークレットを表示して破棄する」ボタンのクリック処理
   btnReveal.addEventListener('click', async () => {
     btnReveal.disabled = true;
-    btnReveal.textContent = '復号および破棄処理中...';
+    btnReveal.textContent = '復号処理中...';
 
     try {
       // 1. Workers API (GET /api/secret/<id>) から暗号文を取得
-      // ※ API側で取得と同時にD1から物理削除されます
       const response = await fetch(`/api/secret/${encodeURIComponent(secretId)}`);
       if (response.status === 404) {
         showError('このシークレットは既に閲覧されたか、有効期限が切れています。');
@@ -61,6 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await response.json();
       const ciphertext = data.ciphertext;
       const iv = data.iv;
+      const burnAfterRead = data.burn_after_read ?? 1;
 
       // 2. URLハッシュから暗号鍵をインポート
       const key = await window.SecureCrypto.importKey(keyBase64);
@@ -70,11 +71,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // 4. 画面表示の切り替え
       revealedText.textContent = plainText;
+
+      if (burnAfterRead === 1) {
+        revealedDesc.textContent = '✓ サーバーからデータは永久に削除されました。必要な場合は今すぐコピーしてください。';
+        revealedDesc.style.color = 'var(--accent-danger)';
+        // ワンタイムの場合はアドレスバーからハッシュ（復号鍵）を除去
+        history.replaceState(null, '', window.location.pathname);
+      } else {
+        const expireStr = new Date(data.expires_at).toLocaleString('ja-JP');
+        revealedDesc.textContent = `✓ 復号に成功しました。このシークレットは有効期限（${expireStr}まで）何度でも閲覧できます。`;
+        revealedDesc.style.color = 'var(--accent-cyan)';
+      }
+
       stateConfirm.style.display = 'none';
       stateRevealed.style.display = 'block';
-
-      // セキュリティのため、ブラウザのアドレスバーからハッシュ（復号鍵）を除去
-      history.replaceState(null, '', window.location.pathname);
 
     } catch (err) {
       console.error('復号処理に失敗しました:', err);
