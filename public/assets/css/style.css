@@ -556,3 +556,211 @@ body {
   border-color: rgba(255, 255, 255, 0.2);
 }
 
+/* ==========================================================================
+   リファクタリング用コンポーネント・ユーティリティ (インラインスタイルの移行)
+   ========================================================================== */
+
+/* 初期非表示要素（JavaScriptで制御） */
+#group-note,
+#group-image,
+#input-image-file,
+#image-preview-card,
+#group-custom-days,
+#result-box,
+#state-revealed,
+#revealed-image-container,
+#state-error {
+  display: none;
+}
+
+/* ヘッダー内 GitHub リンクボタン */
+.header-github-btn {
+  padding: 0.35rem 0.65rem;
+  font-size: 0.8rem;
+  text-decoration: none;
+}
+
+/* 汎用ボタン補助クラス */
+.btn-auto {
+  width: auto;
+}
+
+.inline-btn {
+  display: inline-flex;
+  text-decoration: none;
+}
+
+/* テキストカラー補助 */
+.text-danger {
+  color: var(--accent-danger);
+}
+
+.text-main {
+  color: var(--text-main);
+}
+
+/* 消去モード選択ラジオカード */
+.burn-mode-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+}
+
+.radio-card {
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 0.85rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  transition: all var(--transition-fast);
+}
+
+.radio-card.active-burn {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: var(--accent-primary);
+}
+
+.radio-card input[type="radio"] {
+  margin-top: 3px;
+}
+
+.radio-card-title {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #ecfdf5;
+}
+
+.radio-card-title.text-main {
+  color: var(--text-main);
+}
+
+.radio-card-desc {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  line-height: 1.3;
+}
+
+/* カスタム日数入力エリア */
+.custom-days-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.custom-days-input {
+  max-width: 130px;
+}
+
+.custom-days-unit {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+/* Turnstile ウィジェットコンテナ */
+.turnstile-wrapper {
+  margin-bottom: 1.25rem;
+  display: flex;
+  justify-content: center;
+}
+
+/* 発行結果コンテナ要素 */
+.result-title {
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  color: var(--accent-primary);
+}
+
+.result-desc {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 0.8rem;
+}
+
+.result-actions {
+  margin-top: 1rem;
+  text-align: right;
+}
+
+.btn-reset {
+  font-size: 0.8rem;
+}
+
+/* 閲覧画面のアクションボタングループ */
+.action-buttons {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
+.action-buttons.wrap {
+  flex-wrap: wrap;
+}
+
+.center-action {
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+.danger-banner {
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+}
+
+/* 利用上の注意・禁止事項カード */
+.terms-card {
+  margin-top: 1.5rem;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 0.85rem 1.2rem;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  line-height: 1.6;
+}
+
+.terms-summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  list-style: none;
+}
+
+.terms-summary::-webkit-details-marker {
+  display: none;
+}
+
+.terms-arrow {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+.terms-body {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.terms-lead {
+  margin-bottom: 0.5rem;
+  color: var(--text-muted);
+}
+
+.terms-list {
+  padding-left: 1.2rem;
+  margin-bottom: 0.5rem;
+  color: var(--text-muted);
+}
+
+.terms-note {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+

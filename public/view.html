@@ -19,9 +19,9 @@
         </svg>
         SecureShare
       </a>
-      <div style="display: flex; align-items: center; gap: 0.75rem;">
+      <div class="header-right">
         <span class="badge-tag">One-Time Secret</span>
-        <a href="https://github.com/cchina33/SecureShare" target="_blank" rel="noopener noreferrer" class="btn-secondary" id="github-link" style="padding: 0.35rem 0.65rem; font-size: 0.8rem; text-decoration: none;" title="GitHub でソースコードを見る">
+        <a href="https://github.com/cchina33/SecureShare" target="_blank" rel="noopener noreferrer" class="btn-secondary header-github-btn" id="github-link" title="GitHub でソースコードを見る">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
             <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
           </svg>
@@ -38,7 +38,7 @@
       <!-- ステート1: 閲覧前の確認画面（誤クリック・破棄防止） -->
       <div id="state-confirm">
         <h1 class="card-title" id="view-title">シークレットを受信しました</h1>
-        <p class="card-desc" id="view-desc">このシークレットは、閲覧すると直ちにサーバー上から完全消去されます。</p>
+        <p class="card-desc" id="view-desc">このシークレットは、表示した時点でサーバーから消去されます。</p>
 
         <div class="warning-box" id="warning-box">
           <div class="warning-title" id="warning-title">
@@ -47,21 +47,21 @@
               <line x1="12" y1="9" x2="12" y2="13"></line>
               <line x1="12" y1="17" x2="12.01" y2="17"></line>
             </svg>
-            <span id="warning-title-text">注意：再閲覧はできません</span>
+            <span id="warning-title-text">注意：再表示はできません</span>
           </div>
-          <span id="warning-text">一度「シークレットを表示する」を押すと、ページを再読み込みしても二度と復元できません。</span>
+          <span id="warning-text">一度「表示する」を押すと、ページを再読み込みしても復元できません。</span>
         </div>
 
         <button type="button" class="btn-danger" id="btn-reveal">
-          シークレットを表示して破棄する
+          表示する
         </button>
       </div>
 
       <!-- ステート2: 復号・表示画面（初期非表示） -->
-      <div id="state-revealed" style="display: none;">
+      <div id="state-revealed">
         <h1 class="card-title" id="revealed-title">復号されたシークレット</h1>
-        <p class="card-desc" id="revealed-desc" style="color: var(--accent-danger);">
-          ✓ サーバーからデータは永久に削除されました。必要な場合は今すぐコピーしてください。
+        <p class="card-desc text-danger" id="revealed-desc">
+          ✓ データはサーバーから削除されました。忘れず保存して下さい。
         </p>
 
         <!-- テキストシークレット用コンテナ -->
@@ -70,22 +70,22 @@
             <pre class="secret-text" id="revealed-text"></pre>
           </div>
 
-          <div style="display: flex; gap: 0.75rem; justify-content: flex-end;">
-            <button type="button" class="btn-primary" id="btn-copy-secret" style="width: auto;">
+          <div class="action-buttons">
+            <button type="button" class="btn-primary btn-auto" id="btn-copy-secret">
               内容をコピー
             </button>
-            <a href="index.html" class="btn-secondary" style="text-decoration: none;">新しい共有を作成</a>
+            <a href="index.html" class="btn-secondary">新しい共有を作成</a>
           </div>
         </div>
 
         <!-- 画像シークレット用コンテナ（初期非表示） -->
-        <div id="revealed-image-container" style="display: none;">
+        <div id="revealed-image-container">
           <div class="image-view-card">
             <img id="revealed-image" class="image-view-img" src="" alt="復号された画像">
           </div>
 
-          <div style="display: flex; gap: 0.75rem; justify-content: flex-end; flex-wrap: wrap;">
-            <a id="btn-download-image" class="btn-primary" style="text-decoration: none; width: auto;" download="decrypted_image">
+          <div class="action-buttons wrap">
+            <a id="btn-download-image" class="btn-primary btn-auto inline-btn" download="decrypted_image">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                 <polyline points="7 10 12 15 17 10"></polyline>
@@ -93,28 +93,27 @@
               </svg>
               画像を保存
             </a>
-            <a id="btn-open-image-tab" class="btn-secondary" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
+            <a id="btn-open-image-tab" class="btn-secondary" target="_blank" rel="noopener noreferrer">
               別タブで拡大
             </a>
-            <a href="index.html" class="btn-secondary" style="text-decoration: none;">新しい共有を作成</a>
+            <a href="index.html" class="btn-secondary">新しい共有を作成</a>
           </div>
         </div>
       </div>
 
-
       <!-- ステート3: エラー・閲覧済み・期限切れ画面（初期非表示） -->
-      <div id="state-error" style="display: none;">
-        <h1 class="card-title" style="color: var(--accent-danger);">シークレットが見つかりません</h1>
+      <div id="state-error">
+        <h1 class="card-title text-danger">シークレットが見つかりません</h1>
         <p class="card-desc" id="error-message">
           このシークレットは既に閲覧されて破棄されたか、有効期限が切れています。
         </p>
 
-        <div class="security-banner" style="background: rgba(239, 68, 68, 0.08); border-color: rgba(239, 68, 68, 0.3); color: #fca5a5;">
+        <div class="security-banner danger-banner">
           安全のため、SecureShareのデータは閲覧完了または有効期限切れを迎えると、サーバーから自動で完全に削除されます。
         </div>
 
-        <div style="margin-top: 1.5rem; text-align: center;">
-          <a href="index.html" class="btn-primary" style="text-decoration: none; display: inline-flex;">
+        <div class="center-action">
+          <a href="index.html" class="btn-primary inline-btn">
             ホームに戻る
           </a>
         </div>
@@ -128,7 +127,7 @@
 
   <!-- フッター -->
   <footer class="footer">
-    <p>&copy; 2026 SecureShare. 完全無料・ゼロナレッジ・オープンソース.</p>
+    <p>&copy; 2026 SecureShare.</p>
   </footer>
 
   <!-- スクリプト群 -->
