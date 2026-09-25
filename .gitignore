@@ -1,0 +1,23 @@
+# 依存関係
+node_modules/
+package-lock.json
+
+# Cloudflare Wrangler キャッシュ & 一時データ
+.wrangler/
+.mf/
+
+# 環境変数・秘密情報（絶対にコミットしない）
+.dev.vars
+.env
+.env.*
+!.env.example
+!.dev.vars.example
+
+# OS 生成ファイル
+.DS_Store
+Thumbs.db
+
+# ログファイル
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

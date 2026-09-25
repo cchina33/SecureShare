@@ -1,0 +1,14 @@
+{
+  "name": "secureshare",
+  "version": "1.0.0",
+  "description": "セキュアワンタイムメモ・パスワード共有サービス",
+  "scripts": {
+    "dev": "wrangler pages dev public --d1 DB=secureshare-db",
+    "d1:init": "wrangler d1 execute secureshare-db --local --file=./schema.sql",
+    "deploy": "wrangler pages deploy public"
+  },
+  "devDependencies": {
+    "wrangler": "^3.114.0"
+  },
+  "private": true
+}

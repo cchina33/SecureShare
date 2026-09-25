@@ -1,0 +1,13 @@
+name = "secureshare-cron-worker"
+main = "src/index.js"
+compatibility_date = "2026-09-25"
+
+# 定期実行スケジュール: 毎時0分に実行
+[triggers]
+crons = ["0 * * * *"]
+
+# Cloudflare D1 データベースバインディング（本体と同一のDBを参照）
+[[d1_databases]]
+binding = "DB"
+database_name = "secureshare-db"
+database_id = "local-secureshare-db"

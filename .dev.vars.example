@@ -1,0 +1,8 @@
+# Cloudflare Turnstile シークレットキー（本番環境用）
+# Cloudflare ダッシュボードの Turnstile 設定から取得したシークレットキーを設定してください。
+# ローカル開発では、このファイルを `.dev.vars` にコピーして利用できます。
+TURNSTILE_SECRET_KEY="1x0000000000000000000000000000000AA"
+
+# 期限切れ削除API（/api/cron/cleanup）認証用シークレットキー
+# 任意のランダム文字列を設定してください。
+CRON_SECRET="test-cron-secret"

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SecureShare - セキュアワンタイムメモ・パスワード共有サービス</title>
+  <meta name="description" content="ゼロナレッジ暗号化とワンタイム閲覧でパスワードや機密メモを安全に共有。閲覧後に自動破棄され、サーバー管理者も中身を閲覧できません。">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+</head>
+<body>
+
+  <!-- ヘッダー -->
+  <header class="header">
+    <div class="header-container">
+      <a href="index.html" class="logo" id="header-logo">
+        <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+        SecureShare
+      </a>
+      <div style="display: flex; align-items: center; gap: 0.75rem;">
+        <span class="badge-tag">Zero-Knowledge</span>
+        <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="btn-secondary" id="github-link" style="padding: 0.35rem 0.65rem; font-size: 0.8rem; text-decoration: none;" title="GitHub でソースコードを見る">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
+          </svg>
+          GitHub
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- メインコンテンツ -->
+  <main class="main-content">
+    <div class="card" id="create-card">
+      <h1 class="card-title">セキュアに共有する</h1>
+      <p class="card-desc">データはブラウザ上で暗号化され、閲覧後に自動で完全消去されます。</p>
+
+      <!-- ゼロナレッジ説明バナー -->
+      <div class="security-banner">
+        <svg class="security-banner-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="16" x2="12" y2="12"></line>
+          <line x1="12" y1="8" x2="12.01" y2="8"></line>
+        </svg>
+        <div>
+          <strong>ゼロナレッジ暗号化 (AES-256-GCM)</strong><br>
+          復号キーはURLのハッシュ（#）にのみ含まれ、サーバーには一切送信されません。
+        </div>
+      </div>
+
+      <!-- 入力モードタブ -->
+      <div class="tabs" role="tablist">
+        <button class="tab-btn active" id="tab-password" role="tab" aria-selected="true">パスワード</button>
+        <button class="tab-btn" id="tab-note" role="tab" aria-selected="false">秘密メモ</button>
+      </div>
+
+      <!-- 送信フォーム -->
+      <form id="secret-form">
+        <!-- パスワード入力フィールド -->
+        <div class="form-group" id="group-password">
+          <label class="form-label" for="input-password">共有するパスワード</label>
+          <input type="password" id="input-password" class="form-input" placeholder="パスワードを入力してください" autocomplete="off">
+        </div>
+
+        <!-- 秘密メモ入力フィールド（初期非表示） -->
+        <div class="form-group" id="group-note" style="display: none;">
+          <label class="form-label" for="input-note">共有する秘密メモ</label>
+          <textarea id="input-note" class="form-textarea" placeholder="APIキーや秘密のテキストを入力してください..."></textarea>
+        </div>
+
+        <!-- 有効期限設定 -->
+        <div class="form-group">
+          <label class="form-label" for="select-expire">有効期限（未閲覧時の自動削除）</label>
+          <select id="select-expire" class="form-select">
+            <option value="3600">1時間後</option>
+            <option value="86400" selected>24時間後 (1日)</option>
+            <option value="259200">3日後</option>
+            <option value="604800">7日後</option>
+          </select>
+        </div>
+
+        <!-- Turnstile認証ウィジェット枠 -->
+        <div id="turnstile-container" style="margin-bottom: 1.25rem; display: flex; justify-content: center;">
+          <div class="cf-turnstile" data-sitekey="1x00000000000000000000AA" data-theme="dark"></div>
+        </div>
+
+        <!-- 発行ボタン -->
+        <button type="submit" class="btn-primary" id="btn-create">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+          暗号化してワンタイムリンクを発行
+        </button>
+      </form>
+
+      <!-- 発行結果表示コンテナ（初期非表示） -->
+      <div class="result-box" id="result-box" style="display: none;">
+        <div style="font-weight: 600; margin-bottom: 0.3rem; color: var(--accent-primary);">
+          ✓ ワンタイムリンクが発行されました
+        </div>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.8rem;">
+          このリンクは1度開かれると自動的に消去されます。相手に安全に伝達してください。
+        </p>
+        <div class="url-display">
+          <input type="text" class="url-input" id="generated-url" readonly>
+          <button type="button" class="btn-secondary" id="btn-copy-url">コピー</button>
+        </div>
+        <div style="margin-top: 1rem; text-align: right;">
+          <button type="button" class="btn-secondary" id="btn-reset" style="font-size: 0.8rem;">別のシークレットを作成</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- トースト通知 -->
+  <div class="toast" id="toast">クリップボードにコピーしました</div>
+
+  <!-- フッター -->
+  <footer class="footer">
+    <p>&copy; 2026 SecureShare.</p>
+  </footer>
+
+  <!-- スクリプト群 -->
+  <script src="assets/js/crypto.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SecureShare - シークレット閲覧</title>
+  <meta name="description" content="ゼロナレッジ暗号化されたシークレットの安全な閲覧。閲覧後にデータは完全に破棄されます。">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+  <!-- ヘッダー -->
+  <header class="header">
+    <div class="header-container">
+      <a href="index.html" class="logo" id="header-logo">
+        <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+        SecureShare
+      </a>
+      <div style="display: flex; align-items: center; gap: 0.75rem;">
+        <span class="badge-tag">One-Time Secret</span>
+        <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="btn-secondary" id="github-link" style="padding: 0.35rem 0.65rem; font-size: 0.8rem; text-decoration: none;" title="GitHub でソースコードを見る">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
+          </svg>
+          GitHub
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- メインコンテンツ -->
+  <main class="main-content">
+    <div class="card" id="view-card">
+
+      <!-- ステート1: 閲覧前の確認画面（誤クリック・破棄防止） -->
+      <div id="state-confirm">
+        <h1 class="card-title">ワンタイムシークレットを受信しました</h1>
+        <p class="card-desc">このシークレットは、閲覧すると直ちにサーバー上から完全消去されます。</p>
+
+        <div class="warning-box">
+          <div class="warning-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
+              <line x1="12" y1="9" x2="12" y2="13"></line>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+            注意：再閲覧はできません
+          </div>
+          一度「シークレットを表示する」を押すと、ページを再読み込みしても二度と復元できません。
+        </div>
+
+        <button type="button" class="btn-danger" id="btn-reveal">
+          シークレットを表示して破棄する
+        </button>
+      </div>
+
+      <!-- ステート2: 復号・表示画面（初期非表示） -->
+      <div id="state-revealed" style="display: none;">
+        <h1 class="card-title">復号されたシークレット</h1>
+        <p class="card-desc" style="color: var(--accent-danger);">
+          ✓ サーバーからデータは永久に削除されました。必要な場合は今すぐコピーしてください。
+        </p>
+
+        <div class="secret-display-area">
+          <pre class="secret-text" id="revealed-text"></pre>
+        </div>
+
+        <div style="display: flex; gap: 0.75rem; justify-content: flex-end;">
+          <button type="button" class="btn-primary" id="btn-copy-secret" style="width: auto;">
+            内容をコピー
+          </button>
+          <a href="index.html" class="btn-secondary" style="text-decoration: none;">新しい共有を作成</a>
+        </div>
+      </div>
+
+      <!-- ステート3: エラー・閲覧済み・期限切れ画面（初期非表示） -->
+      <div id="state-error" style="display: none;">
+        <h1 class="card-title" style="color: var(--accent-danger);">シークレットが見つかりません</h1>
+        <p class="card-desc" id="error-message">
+          このシークレットは既に閲覧されて破棄されたか、有効期限が切れています。
+        </p>
+
+        <div class="security-banner" style="background: rgba(239, 68, 68, 0.08); border-color: rgba(239, 68, 68, 0.3); color: #fca5a5;">
+          安全のため、SecureShareのシークレットは一度読み取られるとD1データベースから直ちに物理削除されます。
+        </div>
+
+        <div style="margin-top: 1.5rem; text-align: center;">
+          <a href="index.html" class="btn-primary" style="text-decoration: none; display: inline-flex;">
+            ホームに戻る
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- トースト通知 -->
+  <div class="toast" id="toast">クリップボードにコピーしました</div>
+
+  <!-- フッター -->
+  <footer class="footer">
+    <p>&copy; 2026 SecureShare. 完全無料・ゼロナレッジ・オープンソース.</p>
+  </footer>
+
+  <!-- スクリプト群 -->
+  <script src="assets/js/crypto.js"></script>
+  <script src="assets/js/view.js"></script>
+</body>
+</html>
