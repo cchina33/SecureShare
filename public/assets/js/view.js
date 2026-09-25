@@ -51,31 +51,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // 1. Workers API (GET /api/secret/<id>) から暗号文を取得
       // ※ API側で取得と同時にD1から物理削除されます
-      try {
-        const response = await fetch(`/api/secret/${encodeURIComponent(secretId)}`);
-        if (response.status === 404) {
-          showError('このシークレットは既に閲覧されたか、有効期限が切れています。');
-          return;
-        }
-        if (!response.ok) {
-          throw new Error('暗号文の取得に失敗しました。');
-        }
-        const data = await response.json();
-        ciphertext = data.ciphertext;
-        iv = data.iv;
-      } catch (apiError) {
-        console.warn('Workers API未接続のため、ローカルモックストレージを参照します。', apiError);
-        // ローカル単体テスト用: localStorageから取得し、即座に削除（ワンタイム動作のシミュレート）
-        const mockItem = localStorage.getItem(`secureshare_${secretId}`);
-        if (!mockItem) {
-          showError('このシークレットは既に閲覧されたか、存在しません。');
-          return;
-        }
-        const data = JSON.parse(mockItem);
-        ciphertext = data.ciphertext;
-        iv = data.iv;
-        localStorage.removeItem(`secureshare_${secretId}`); // ワンタイム破棄
+      const response = await fetch(`/api/secret/${encodeURIComponent(secretId)}`);
+      if (response.status === 404) {
+        showError('このシークレットは既に閲覧されたか、有効期限が切れています。');
+        return;
       }
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        showError(errData.error || '暗号文の取得に失敗しました。');
+        return;
+      }
+      const data = await response.json();
+      const ciphertext = data.ciphertext;
+      const iv = data.iv;
 
       // 2. URLハッシュから暗号鍵をインポート
       const key = await window.SecureCrypto.importKey(keyBase64);

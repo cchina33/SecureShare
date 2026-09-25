@@ -85,8 +85,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const keyBase64 = await window.SecureCrypto.exportKey(key);
 
       // 4. バックエンドAPI (POST /api/secret) への送信
-      // ※ バックエンド未デプロイ時（ローカル単体テスト）のためのフォールバック処理を含みます
-      let secretId = '';
       const payload = {
         ciphertext,
         iv,
@@ -95,30 +93,22 @@ document.addEventListener('DOMContentLoaded', () => {
         turnstile_token: turnstileToken,
       };
 
-      try {
-        const response = await fetch('/api/secret', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        });
+      const response = await fetch('/api/secret', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
 
-        if (response.ok) {
-          const data = await response.json();
-          secretId = data.id;
-        } else {
-          throw new Error('API request failed');
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        if (response.status === 403) {
+          throw new Error('ボット防止認証（Turnstile）に失敗しました。もう一度チェックをやり直してください。');
         }
-      } catch (apiError) {
-        console.warn('Workers API未接続のため、ローカル確認用モックIDを生成します。', apiError);
-        // ローカル単体テスト用: UUIDを擬似生成してlocalStorageに保存（オフラインテスト用）
-        secretId = 'mock-' + crypto.randomUUID();
-        localStorage.setItem(`secureshare_${secretId}`, JSON.stringify({
-          ciphertext,
-          iv,
-          content_type: activeMode,
-          created_at: Date.now(),
-        }));
+        throw new Error(errData.error || `シークレットの発行に失敗しました (HTTP ${response.status})`);
       }
+
+      const data = await response.json();
+      const secretId = data.id;
 
       // 5. ゼロナレッジ受取用URLの構築 (ハッシュフラグメントに暗号鍵を格納)
       // 形式: https://<domain>/view.html?id=<secretId>#<keyBase64>
@@ -134,8 +124,12 @@ document.addEventListener('DOMContentLoaded', () => {
       generatedUrlInput.select();
 
     } catch (err) {
-      console.error('暗号化または発行に失敗しました:', err);
-      alert('エラーが発生しました: ' + err.message);
+      console.error('シークレット発行エラー:', err);
+      alert(err.message);
+      // Turnstileウィジェットをリセットして再試行可能にする
+      if (window.turnstile) {
+        window.turnstile.reset();
+      }
     } finally {
       btnCreate.disabled = false;
       btnCreate.innerHTML = `
