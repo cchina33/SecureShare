@@ -36,7 +36,7 @@
   <main class="main-content">
     <div class="card" id="create-card">
       <h1 class="card-title">セキュアに共有する</h1>
-      <p class="card-desc">データはブラウザ上で暗号化され、閲覧後に自動で完全消去されます。</p>
+      <p class="card-desc">データはブラウザ上で暗号化され、有効期限が過ぎると自動消去されます。</p>
 
       <!-- ゼロナレッジ説明バナー -->
       <div class="security-banner">
@@ -55,6 +55,7 @@
       <div class="tabs" role="tablist">
         <button class="tab-btn active" id="tab-password" role="tab" aria-selected="true">パスワード</button>
         <button class="tab-btn" id="tab-note" role="tab" aria-selected="false">秘密メモ</button>
+        <button class="tab-btn" id="tab-image" role="tab" aria-selected="false">画像</button>
       </div>
 
       <!-- 送信フォーム -->
@@ -70,6 +71,35 @@
           <label class="form-label" for="input-note">共有する秘密メモ</label>
           <textarea id="input-note" class="form-textarea" placeholder="APIキーや秘密のテキストを入力してください..."></textarea>
         </div>
+
+        <!-- 画像アップロードフィールド（初期非表示） -->
+        <div class="form-group" id="group-image" style="display: none;">
+          <label class="form-label">共有する画像（最大 10MB）</label>
+          <input type="file" id="input-image-file" accept="image/png,image/jpeg,image/webp,image/gif" style="display: none;">
+          
+          <div class="drop-zone" id="image-drop-zone">
+            <svg class="drop-zone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <rect x="3" y="3" width="18" height="18" rx="3" ry="3"></rect>
+              <circle cx="8.5" cy="8.5" r="1.5"></circle>
+              <polyline points="21 15 16 10 5 21"></polyline>
+            </svg>
+            <div class="drop-zone-text">クリックまたは画像をドラッグ＆ドロップ</div>
+            <div class="drop-zone-hint">PNG, JPEG, WebP, GIF（最大 10MB）</div>
+          </div>
+
+          <div class="image-preview-card" id="image-preview-card" style="display: none;">
+            <img id="image-preview-thumb" class="image-preview-thumb" src="" alt="プレビュー">
+            <div class="image-preview-info">
+              <div id="image-preview-name" class="image-preview-name">image.png</div>
+              <div class="image-preview-meta">
+                <span id="image-preview-size">0 KB</span>
+                <span id="image-preview-type">image/png</span>
+              </div>
+            </div>
+            <button type="button" id="btn-remove-image" class="image-preview-remove">削除</button>
+          </div>
+        </div>
+
 
         <!-- 消去モード選択 -->
         <div class="form-group">

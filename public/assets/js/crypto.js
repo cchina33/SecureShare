@@ -132,6 +132,53 @@ async function decryptData(cipherTextBase64, ivBase64, key) {
   return decoder.decode(decryptedBuffer);
 }
 
+/**
+ * 画像バイナリ等のArrayBufferを暗号化する
+ * @param {ArrayBuffer} arrayBuffer 暗号化対象のバイナリデータ
+ * @param {CryptoKey} key 暗号鍵
+ * @returns {Promise<{ encryptedBuffer: ArrayBuffer, iv: string }>} 暗号化バイナリとBase64初期化ベクトル
+ */
+async function encryptBinary(arrayBuffer, key) {
+  // 12バイト（96bit）の初期化ベクトル(IV)を安全に生成
+  const iv = window.crypto.getRandomValues(new Uint8Array(12));
+
+  const encryptedBuffer = await window.crypto.subtle.encrypt(
+    {
+      name: 'AES-GCM',
+      iv: iv,
+    },
+    key,
+    arrayBuffer
+  );
+
+  return {
+    encryptedBuffer: encryptedBuffer,
+    iv: bufferToBase64(iv.buffer),
+  };
+}
+
+/**
+ * 暗号化されたバイナリデータを復号する
+ * @param {ArrayBuffer} encryptedBuffer 暗号化バイナリデータ
+ * @param {string} ivBase64 Base64形式の初期化ベクトル
+ * @param {CryptoKey} key 復号鍵
+ * @returns {Promise<ArrayBuffer>} 復号された平文バイナリデータ
+ */
+async function decryptBinary(encryptedBuffer, ivBase64, key) {
+  const ivBuffer = base64ToBuffer(ivBase64);
+
+  const decryptedBuffer = await window.crypto.subtle.decrypt(
+    {
+      name: 'AES-GCM',
+      iv: new Uint8Array(ivBuffer),
+    },
+    key,
+    encryptedBuffer
+  );
+
+  return decryptedBuffer;
+}
+
 // グローバルスコープに公開（ESモジュール非対応環境でも利用可能にする）
 window.SecureCrypto = {
   generateAesKey,
@@ -139,4 +186,7 @@ window.SecureCrypto = {
   importKey,
   encryptData,
   decryptData,
+  encryptBinary,
+  decryptBinary,
 };
+

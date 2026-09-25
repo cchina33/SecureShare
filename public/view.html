@@ -59,22 +59,48 @@
 
       <!-- ステート2: 復号・表示画面（初期非表示） -->
       <div id="state-revealed" style="display: none;">
-        <h1 class="card-title">復号されたシークレット</h1>
+        <h1 class="card-title" id="revealed-title">復号されたシークレット</h1>
         <p class="card-desc" id="revealed-desc" style="color: var(--accent-danger);">
           ✓ サーバーからデータは永久に削除されました。必要な場合は今すぐコピーしてください。
         </p>
 
-        <div class="secret-display-area">
-          <pre class="secret-text" id="revealed-text"></pre>
+        <!-- テキストシークレット用コンテナ -->
+        <div id="revealed-text-container">
+          <div class="secret-display-area">
+            <pre class="secret-text" id="revealed-text"></pre>
+          </div>
+
+          <div style="display: flex; gap: 0.75rem; justify-content: flex-end;">
+            <button type="button" class="btn-primary" id="btn-copy-secret" style="width: auto;">
+              内容をコピー
+            </button>
+            <a href="index.html" class="btn-secondary" style="text-decoration: none;">新しい共有を作成</a>
+          </div>
         </div>
 
-        <div style="display: flex; gap: 0.75rem; justify-content: flex-end;">
-          <button type="button" class="btn-primary" id="btn-copy-secret" style="width: auto;">
-            内容をコピー
-          </button>
-          <a href="index.html" class="btn-secondary" style="text-decoration: none;">新しい共有を作成</a>
+        <!-- 画像シークレット用コンテナ（初期非表示） -->
+        <div id="revealed-image-container" style="display: none;">
+          <div class="image-view-card">
+            <img id="revealed-image" class="image-view-img" src="" alt="復号された画像">
+          </div>
+
+          <div style="display: flex; gap: 0.75rem; justify-content: flex-end; flex-wrap: wrap;">
+            <a id="btn-download-image" class="btn-primary" style="text-decoration: none; width: auto;" download="decrypted_image">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              画像を保存
+            </a>
+            <a id="btn-open-image-tab" class="btn-secondary" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
+              別タブで拡大
+            </a>
+            <a href="index.html" class="btn-secondary" style="text-decoration: none;">新しい共有を作成</a>
+          </div>
         </div>
       </div>
+
 
       <!-- ステート3: エラー・閲覧済み・期限切れ画面（初期非表示） -->
       <div id="state-error" style="display: none;">

@@ -7,3 +7,9 @@ pages_build_output_dir = "public"
 binding = "DB"
 database_name = "secureshare-db"
 database_id = "b4f160f3-4fa2-4fbc-85bb-a4dc23d062b5"
+
+# Cloudflare R2 バケットバインディング (画像保存用)
+[[r2_buckets]]
+binding = "MY_BUCKET"
+bucket_name = "secureshare-images"
+
