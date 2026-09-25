@@ -10,4 +10,4 @@ crons = ["0 * * * *"]
 [[d1_databases]]
 binding = "DB"
 database_name = "secureshare-db"
-database_id = "local-secureshare-db"
+database_id = "b4f160f3-4fa2-4fbc-85bb-a4dc23d062b5"
