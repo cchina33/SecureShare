@@ -3,6 +3,8 @@
 > **ゼロナレッジ暗号化 & ワンタイム閲覧対応のセキュアなパスワード・秘密メモ共有サービス**  
 > 完全無料（Cloudflare 無料枠）で運用可能なオープンソースWebアプリケーション。
 
+**公開Webサイト（今すぐ使う）**: [https://secureshare-d6x.pages.dev/](https://secureshare-d6x.pages.dev/)
+
 ---
 
 ## 特徴とコアバリュー
