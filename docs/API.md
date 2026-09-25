@@ -1,7 +1,7 @@
 # SecureShare API 仕様書
 
 SecureShare のバックエンド API（Cloudflare Pages Functions）のリファレンスです。
-テキストシークレット共有および暗号化画像共有に対応しています。
+ゼロナレッジ・エンドツーエンド暗号化（Zero-Knowledge E2EE）によるテキストシークレット共有および暗号化画像共有に対応しています。
 
 ---
 

@@ -152,7 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
         revealedImageContainer.style.display = 'block';
 
         if (burnAfterRead === 1) {
-          revealedDesc.textContent = '✓ サーバーからデータは永久に削除されました。必要な場合は今すぐ保存してください。';
+          revealedDesc.textContent = '✓ サーバーからデータは削除されました。忘れず保存して下さい。';
           revealedDesc.style.color = 'var(--accent-danger)';
           history.replaceState(null, '', window.location.pathname);
         } else {

@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SecureShare - セキュアワンタイムメモ・パスワード・画像共有サービス</title>
-  <meta name="description" content="ゼロナレッジ暗号化とワンタイム閲覧でパスワードや機密メモ、画像を安全に共有。閲覧後に自動破棄され、サーバー管理者も中身を閲覧できません。">
+  <title>SecureShare(セキュアシェア) - パスワード・メモ・画像共有サービス</title>
+  <meta name="description" content="ゼロナレッジ・エンドツーエンド暗号化（Zero-Knowledge E2EE）とワンタイム閲覧でパスワードや機密メモ、画像を安全に共有。閲覧後に自動破棄され、サーバー管理者も中身を閲覧できません。">
   <link rel="stylesheet" href="assets/css/style.css">
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
@@ -21,7 +21,7 @@
         SecureShare
       </a>
       <div class="header-right">
-        <span class="badge-tag">Zero-Knowledge</span>
+        <span class="badge-tag">Zero-Knowledge E2EE</span>
         <a href="https://github.com/cchina33/SecureShare" target="_blank" rel="noopener noreferrer" class="btn-secondary header-github-btn" id="github-link" title="GitHub でソースコードを見る">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
             <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
@@ -38,7 +38,7 @@
       <h1 class="card-title">SecureShare(セキュアシェア)</h1>
       <p class="card-desc">データはブラウザ上で暗号化され、有効期限が過ぎると自動消去されます。</p>
 
-      <!-- ゼロナレッジ説明バナー -->
+      <!-- ゼロナレッジ・エンドツーエンド暗号化説明バナー -->
       <div class="security-banner">
         <svg class="security-banner-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="12" cy="12" r="10"></circle>
@@ -46,10 +46,11 @@
           <line x1="12" y1="8" x2="12.01" y2="8"></line>
         </svg>
         <div>
-          <strong>ゼロナレッジ暗号化 (AES-256-GCM)</strong><br>
-          復号キーはURLのハッシュ（#）にのみ含まれ、サーバーには一切送信されません。
+          <strong>ゼロナレッジ・エンドツーエンド暗号化 (AES-256-GCM)</strong><br>
+          復号キーはURLのハッシュ（#）にのみ含まれ、サイトやサーバー管理者も中身を閲覧することは技術的に不可能です。
         </div>
       </div>
+
 
       <!-- 入力モードタブ -->
       <div class="tabs" role="tablist">
@@ -188,13 +189,13 @@
               本サービスはプライバシーとセキュリティを最大限に尊重した設計ですが、健全な運用の維持のため、以下の行為を禁止しています：
             </p>
             <ul class="terms-list">
-              <li><strong>違法コンテンツの共有・送信</strong>: 児童ポルノ（CSAM）、合意のない性的画像（リベンジポルノ等）、著作権侵害物、違法薬物等の取引に関する情報の共有・送信。</li>
-              <li><strong>成人向けコンテンツの共有・送信</strong>: 成人向けコンテンツの共有・送信は許可しますが、隠蔽措置を施していないものは禁止です。</li>
-              <li><strong>不正アクセス・マルウェアの共有・送信</strong>: コンピュータウイルス、不正プログラム、フィッシング詐欺目的のデータ共有・送信。</li>
-              <li><strong>第三者の権利侵害</strong>: 誹謗中傷、脅迫、名誉毀損に該当するコンテンツの共有・送信。</li>
+              <li><strong>違法コンテンツの共有</strong>: 児童ポルノ（CSAM）、合意のない性的画像（リベンジポルノ等）、著作権侵害物、違法薬物等の取引に関する情報の共有</li>
+              <li><strong>成人向けコンテンツの共有</strong>: 成人向けコンテンツの共有は可能ですが、現在お住まいの国の法律を遵守してください</li>
+              <li><strong>不正アクセス・マルウェアの共有</strong>: コンピュータウイルス、不正プログラム、フィッシング詐欺目的のデータ共有</li>
+              <li><strong>第三者の権利侵害</strong>: 誹謗中傷、脅迫、名誉毀損に該当するコンテンツの共有</li>
             </ul>
             <p class="terms-note">
-              ※ ゼロナレッジ暗号化によりサーバー側で平文を閲覧・監視することは技術的に不可能ですが、関係機関からの正当な法的要請や悪質な不正利用が認められた場合は、アクセス遮断や関係機関への通報を行う場合があります。
+              ※ ゼロナレッジ・エンドツーエンド暗号化によりサーバー側で平文を閲覧・監視することは技術的に不可能ですが、関係機関からの正当な法的要請や悪質な不正利用が認められた場合は、アクセス遮断や関係機関への通報を行う場合があります。
             </p>
           </div>
         </details>
