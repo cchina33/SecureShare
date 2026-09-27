@@ -51,6 +51,20 @@
         </div>
       </div>
 
+      <!-- メンテナンス案内バナー (無料枠上限到達時に表示) -->
+      <div id="maintenance-banner" style="display: none; background: rgba(239, 68, 68, 0.15); border: 1px solid var(--accent-danger); border-radius: var(--radius-md); padding: 1rem 1.25rem; margin-bottom: 1.5rem; color: #fca5a5;">
+        <div style="font-weight: 600; display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          ただいま本日の無料利用枠の上限に達したため一時停止中です
+        </div>
+        <div id="maintenance-banner-desc" style="font-size: 0.875rem; color: var(--text-secondary); line-height: 1.5;">
+          Cloudflare無料枠の安全上限に達しました。リセット時刻に自動的に受付を再開します。
+        </div>
+      </div>
 
       <!-- 入力モードタブ -->
       <div class="tabs" role="tablist">
@@ -207,13 +221,117 @@
   <!-- トースト通知 -->
   <div class="toast" id="toast">クリップボードにコピーしました</div>
 
+  <!-- プライバシーポリシー モーダル -->
+  <div class="modal-overlay" id="privacy-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="privacy-modal-title">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h2 class="modal-title" id="privacy-modal-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+          プライバシー＆セキュリティポリシー
+        </h2>
+        <button type="button" class="modal-close-btn" id="btn-close-privacy" aria-label="モーダルを閉じる">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="modal-highlight-box">
+          <strong>ゼロナレッジ・エンドツーエンド暗号化（Zero-Knowledge E2EE）</strong><br>
+          SecureShare は利用者のプライバシー保護を最重要視しています。送信データはお使いの端末（ブラウザ）内で暗号化され、復号鍵はサーバーに送信されないため、運営者を含め誰も平文の内容を閲覧できません。
+        </div>
+
+        <h3>1. 基本理念</h3>
+        <p>
+          SecureShare（以下「当サービス」）は、パスワード、機密メモ、画像を安全に共有するためのオープンソースWebアプリケーションです。当サービスは設計段階からのプライバシー保護に基づき設計されており、不要な個人情報の収集を一切行いません。
+        </p>
+
+        <h3>2. ゼロナレッジ暗号化の仕組み</h3>
+        <p>
+          当サービスでは、ブラウザ標準の <strong>Web Crypto API（AES-256-GCM 方式）</strong> を採用しています。
+        </p>
+        <ul>
+          <li><strong>端末内暗号化</strong>: 送信ボタンを押した瞬間、データはお手元の端末内で暗号化されてからサーバーへ送信されます。</li>
+          <li><strong>復号鍵の非送信</strong>: データを復号するための鍵は、共有URLのハッシュフラグメント（<code>#&lt;Key&gt;</code>）にのみ格納されます。ハッシュ部はHTTPリクエストとしてサーバーに送信されない仕様のため、サーバー管理者は復号鍵を取得できません。</li>
+        </ul>
+
+        <h3>3. サーバーで保管するデータ</h3>
+        <p>
+          当サービスのサーバー（Cloudflare D1 / R2）に一時保管されるのは、以下の最小限のデータのみです。
+        </p>
+        <ul>
+          <li><strong>暗号化されたデータ本体</strong>（平文は保存されません）</li>
+          <li><strong>有効期限日時および消去モード情報</strong>（期限管理用）</li>
+          <li><strong>閲覧回数フラグ</strong>（ワンタイム消去判定用）</li>
+          <li>※ ユーザー登録機能は設けておらず、氏名・メールアドレス・電話番号等の個人情報は一切取得・保管しません。</li>
+        </ul>
+
+        <h3>4. データの破棄と自動削除ポリシー</h3>
+        <p>
+          当サービスに預けられたデータは、以下のルールに基づいて確実に削除されます。
+        </p>
+        <ul>
+          <li><strong>閲覧後に即時消去</strong>: 受信者がデータを開いて復号に成功した直後に、サーバーから完全に削除されます。2回目以降のアクセスは404となり、復元は不可能です。</li>
+          <li><strong>期限まで保持</strong>: 指定された有効期限（最大30日、画像は最大8日）が経過した時点で、自動的に物理削除されます。</li>
+          <li><strong>二重のセーフティネット</strong>: 未閲覧のまま放置された画像データも、オブジェクトストレージ（Cloudflare R2）のライフサイクルルールにより9日以内に強制削除されます。</li>
+        </ul>
+
+        <h3>5. 外部サービスおよびアクセスログ</h3>
+        <p>
+          サービスの安定運用および悪意あるDoS攻撃・自動ボットから防御するため、以下の技術を利用しています。
+        </p>
+        <ul>
+          <li><strong>Cloudflare Turnstile</strong>: 自動化スクリプトを遮断するため、人間によるアクセスかどうかの検証に Turnstile を利用しています。</li>
+          <li><strong>インフラログ</strong>: サーバー攻撃の検知および遮断の目的で、一時的なインフラアクセスログ（IPアドレス、ブラウザのUser-Agent等）が生成される場合がありますが、これらは共有された暗号化データと結びつけられることはありません。</li>
+        </ul>
+
+        <h3>6. Cookieおよびトラッキング</h3>
+        <p>
+          当サービスでは、利用者の行動追跡（トラッキング）やターゲティング広告配信を目的とした Cookie は一切使用していません。
+        </p>
+
+        <h3>7. 免責事項とお問い合わせ</h3>
+        <p>
+          当サービスはオープンソースとして無償で提供されています。細心の注意を払って設計・運用されていますが、ネットワーク障害や不可抗力によるデータ消失等の損害について保証するものではありません。
+        </p>
+        <p>
+          ご意見、脆弱性の報告、お問い合わせは日本語で <a href="https://github.com/cchina33/SecureShare" target="_blank" rel="noopener noreferrer" style="color: var(--accent-primary); text-decoration: underline;">GitHub リポジトリ</a> より受け付けています。
+        </p>
+        <h3>8. ポリシーの変更について</h3>
+        <p>
+          本プライバシーポリシーは、サービスの改善や法規制の変更に伴い、予告なく改訂されることがあります。<br>
+          掲載したときから効力を生じるものとします。
+        </p>
+        <h3>サイト管理者</h3>
+        <p>
+          Hina33
+        </p>
+
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" id="btn-close-privacy-footer">閉じる</button>
+      </div>
+    </div>
+  </div>
+
   <!-- フッター -->
   <footer class="footer">
+    <div class="footer-links">
+      <button type="button" class="footer-link" id="btn-open-privacy">プライバシーポリシー</button>
+      <span>&bull;</span>
+      <a href="https://github.com/cchina33/SecureShare" target="_blank" rel="noopener noreferrer" class="footer-link">GitHub</a>
+    </div>
     <p>&copy; 2026 SecureShare.</p>
   </footer>
 
   <!-- スクリプト群 -->
   <script src="assets/js/crypto.js"></script>
   <script src="assets/js/app.js"></script>
+  <script src="assets/js/privacy-modal.js"></script>
 </body>
 </html>

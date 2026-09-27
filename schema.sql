@@ -32,3 +32,12 @@ CREATE TABLE IF NOT EXISTS images (
 -- 画像有効期限クエリ・定期削除用のインデックス
 CREATE INDEX IF NOT EXISTS idx_images_expires_at ON images(expires_at);
 
+-- =============================================================================
+-- システム状態管理テーブル (無料枠サーキットブレーカー用)
+-- =============================================================================
+CREATE TABLE IF NOT EXISTS system_status (
+  key TEXT PRIMARY KEY,
+  value TEXT NOT NULL,
+  updated_at INTEGER NOT NULL
+);
+

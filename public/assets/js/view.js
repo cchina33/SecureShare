@@ -121,6 +121,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (!response.ok) {
           const errData = await response.json().catch(() => ({}));
+          if (response.status === 503 || errData.maintenance) {
+            let msg = errData.message || '現在、無料利用枠の上限に達したため一時停止中です。';
+            if (errData.reset_at) {
+              msg += `\n再開予定時刻: ${new Date(errData.reset_at).toLocaleString('ja-JP')}`;
+            }
+            showError(msg);
+            return;
+          }
           showError(errData.error || '暗号化画像の取得に失敗しました。');
           return;
         }
@@ -170,6 +178,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (!response.ok) {
           const errData = await response.json().catch(() => ({}));
+          if (response.status === 503 || errData.maintenance) {
+            let msg = errData.message || '現在、無料利用枠の上限に達したため一時停止中です。';
+            if (errData.reset_at) {
+              msg += `\n再開予定時刻: ${new Date(errData.reset_at).toLocaleString('ja-JP')}`;
+            }
+            showError(msg);
+            return;
+          }
           showError(errData.error || '暗号文の取得に失敗しました。');
           return;
         }

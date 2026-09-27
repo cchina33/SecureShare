@@ -41,8 +41,33 @@ document.addEventListener('DOMContentLoaded', () => {
   const resultDesc = document.getElementById('result-desc');
   const generatedUrlInput = document.getElementById('generated-url');
   const btnCopyUrl = document.getElementById('btn-copy-url');
-  const btnReset = document.getElementById('btn-reset');
   const toast = document.getElementById('toast');
+  const maintenanceBanner = document.getElementById('maintenance-banner');
+  const maintenanceBannerDesc = document.getElementById('maintenance-banner-desc');
+
+  // サーキットブレーカー（メンテナンス状態）の確認
+  async function checkMaintenanceStatus() {
+    try {
+      const res = await fetch('/api/status');
+      if (!res.ok) return;
+      const data = await res.json();
+      const status = data?.system_status || {};
+      if (status.maintenance_mode?.value === '1') {
+        if (maintenanceBanner) {
+          maintenanceBanner.style.display = 'block';
+          if (status.maintenance_reset_at?.value && maintenanceBannerDesc) {
+            const resetDate = new Date(parseInt(status.maintenance_reset_at.value, 10)).toLocaleString('ja-JP');
+            maintenanceBannerDesc.textContent = `Cloudflare無料枠の上限に達したため新規受付を一時停止しています。再開予定時刻: ${resetDate}`;
+          }
+        }
+        btnCreate.disabled = true;
+        btnCreate.textContent = '一時停止中（無料枠リセット待ち）';
+      }
+    } catch (_) {
+      // 初期取得エラー時は無視して通常動作
+    }
+  }
+  checkMaintenanceStatus();
 
   let activeMode = 'password'; // 'password', 'note', 'image'
 
@@ -323,6 +348,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (!response.ok) {
           const errData = await response.json().catch(() => ({}));
+          if (response.status === 503 || errData.maintenance) {
+            let msg = errData.message || '現在、無料利用枠の上限に達したため一時停止中です。';
+            if (errData.reset_at) {
+              msg += `\n再開予定時刻: ${new Date(errData.reset_at).toLocaleString('ja-JP')}`;
+            }
+            throw new Error(msg);
+          }
           if (response.status === 403) {
             throw new Error('ボット防止認証（Turnstile）に失敗しました。もう一度チェックをやり直してください。');
           }
@@ -355,6 +387,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (!response.ok) {
           const errData = await response.json().catch(() => ({}));
+          if (response.status === 503 || errData.maintenance) {
+            let msg = errData.message || '現在、無料利用枠の上限に達したため一時停止中です。';
+            if (errData.reset_at) {
+              msg += `\n再開予定時刻: ${new Date(errData.reset_at).toLocaleString('ja-JP')}`;
+            }
+            throw new Error(msg);
+          }
           if (response.status === 403) {
             throw new Error('ボット防止認証（Turnstile）に失敗しました。もう一度チェックをやり直してください。');
           }
