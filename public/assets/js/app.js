@@ -14,6 +14,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const inputPassword = document.getElementById('input-password');
   const inputNote = document.getElementById('input-note');
+  const noteCharCounter = document.getElementById('note-char-counter');
+  const noteCharCount = document.getElementById('note-char-count');
+  const MAX_NOTE_LENGTH = 100;
 
   // 画像アップローダー要素
   const inputImageFile = document.getElementById('input-image-file');
@@ -151,6 +154,24 @@ document.addEventListener('DOMContentLoaded', () => {
     tabImage.addEventListener('click', () => switchTab('image'));
   }
 
+  // 秘密メモ文字数カウンターの更新処理
+  function updateNoteCharCount() {
+    if (!inputNote || !noteCharCount) return;
+    const currentLen = inputNote.value.length;
+    noteCharCount.textContent = currentLen;
+
+    if (noteCharCounter) {
+      noteCharCounter.classList.toggle('warning', currentLen >= 80 && currentLen < MAX_NOTE_LENGTH);
+      noteCharCounter.classList.toggle('limit', currentLen >= MAX_NOTE_LENGTH);
+    }
+  }
+
+  if (inputNote) {
+    inputNote.addEventListener('input', updateNoteCharCount);
+    // 初期状態の表示更新
+    updateNoteCharCount();
+  }
+
   // 画像ファイル選択・ドラッグ＆ドロップ処理
   function handleImageFile(file) {
     if (!file) return;
@@ -286,6 +307,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const textToEncrypt = activeMode === 'password' ? inputPassword.value.trim() : inputNote.value.trim();
       if (!textToEncrypt) {
         alert('共有するパスワードまたは秘密メモを入力してください。');
+        return;
+      }
+      if (activeMode === 'note' && inputNote.value.length > MAX_NOTE_LENGTH) {
+        alert(`秘密メモは${MAX_NOTE_LENGTH}文字以内で入力してください。`);
         return;
       }
     }
@@ -465,6 +490,7 @@ document.addEventListener('DOMContentLoaded', () => {
   btnReset.addEventListener('click', () => {
     inputPassword.value = '';
     inputNote.value = '';
+    updateNoteCharCount();
     resetImageSelection();
     resultBox.style.display = 'none';
     secretForm.style.display = 'block';

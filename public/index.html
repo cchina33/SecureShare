@@ -81,7 +81,10 @@
         <!-- 秘密メモ入力フィールド（初期非表示） -->
         <div class="form-group" id="group-note">
           <label class="form-label" for="input-note">共有する秘密メモ</label>
-          <textarea id="input-note" class="form-textarea" placeholder="APIキーや秘密のテキストを入力してください..."></textarea>
+          <textarea id="input-note" class="form-textarea" placeholder="APIキーや秘密のテキストを入力してください..." maxlength="100"></textarea>
+          <div class="char-counter" id="note-char-counter">
+            <span id="note-char-count">0</span> / 100文字
+          </div>
         </div>
 
         <!-- 画像アップロードフィールド（初期非表示） -->
