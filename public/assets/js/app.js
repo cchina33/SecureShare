@@ -161,7 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
     noteCharCount.textContent = currentLen;
 
     if (noteCharCounter) {
-      noteCharCounter.classList.toggle('warning', currentLen >= 80 && currentLen < MAX_NOTE_LENGTH);
+      noteCharCounter.classList.toggle('warning', currentLen >= (MAX_NOTE_LENGTH * 0.8) && currentLen < MAX_NOTE_LENGTH);
       noteCharCounter.classList.toggle('limit', currentLen >= MAX_NOTE_LENGTH);
     }
   }
