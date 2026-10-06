@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const inputNote = document.getElementById('input-note');
   const noteCharCounter = document.getElementById('note-char-counter');
   const noteCharCount = document.getElementById('note-char-count');
-  const MAX_NOTE_LENGTH = 100;
+  const MAX_NOTE_LENGTH = 10000;
 
   // 画像アップローダー要素
   const inputImageFile = document.getElementById('input-image-file');
