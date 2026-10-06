@@ -6,7 +6,7 @@
 export async function onRequestPost(context) {
   const { request, env } = context;
 
-  // 1. バインディングの存在確認
+  //  バインディングの存在確認
   if (!env.DB) {
     return new Response(
       JSON.stringify({ error: 'データベース設定 (DB) が見つかりません。' }),
@@ -30,7 +30,7 @@ export async function onRequestPost(context) {
     const burnModeRaw = formData.get('burn_after_read');
     const turnstileToken = formData.get('turnstile_token');
 
-    // 2. Turnstile (ボット防止認証) の検証
+    // Turnstile (ボット防止認証) の検証
     const turnstileSecret = env.TURNSTILE_SECRET_KEY || '1x0000000000000000000000000000000AA';
     const clientIp = request.headers.get('CF-Connecting-IP');
 
@@ -61,7 +61,7 @@ export async function onRequestPost(context) {
       );
     }
 
-    // 3. バリデーション
+    //  バリデーション
     if (!file || typeof file === 'string') {
       return new Response(
         JSON.stringify({ error: '暗号化画像ファイル (file) が添付されていません。' }),
@@ -115,7 +115,7 @@ export async function onRequestPost(context) {
     // 消去モード: 0 (期限まで保持) または 1 (ワンタイム閲覧後即時消去)
     const burnAfterRead = (burnModeRaw === '0' || burnModeRaw === 0) ? 0 : 1;
 
-    // 4. R2 バケットへ暗号化バイナリを保管
+    //  R2 バケットへ暗号化バイナリを保管
     await env.MY_BUCKET.put(imageId, fileBuffer, {
       httpMetadata: {
         contentType: 'application/octet-stream',
@@ -125,7 +125,7 @@ export async function onRequestPost(context) {
       },
     });
 
-    // 5. D1 データベースへメタデータを保存
+    //  D1 データベースへメタデータを保存
     await env.DB.prepare(
       `INSERT INTO images (id, iv, mime_type, file_size, created_at, expires_at, burn_after_read)
        VALUES (?, ?, ?, ?, ?, ?, ?)`
@@ -133,7 +133,7 @@ export async function onRequestPost(context) {
       .bind(imageId, iv, mimeType, fileSize, createdAt, expiresAt, burnAfterRead)
       .run();
 
-    // 6. 成功レスポンスの返却
+    // 成功レスポンスの返却
     return new Response(
       JSON.stringify({
         id: imageId,

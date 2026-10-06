@@ -44,6 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const resultDesc = document.getElementById('result-desc');
   const generatedUrlInput = document.getElementById('generated-url');
   const btnCopyUrl = document.getElementById('btn-copy-url');
+  const btnReset = document.getElementById('btn-reset');
   const toast = document.getElementById('toast');
   const maintenanceBanner = document.getElementById('maintenance-banner');
   const maintenanceBannerDesc = document.getElementById('maintenance-banner-desc');
@@ -487,16 +488,18 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // 別のシークレットを作成（フォームのリセット）
-  btnReset.addEventListener('click', () => {
-    inputPassword.value = '';
-    inputNote.value = '';
-    updateNoteCharCount();
-    resetImageSelection();
-    resultBox.style.display = 'none';
-    secretForm.style.display = 'block';
-    // Turnstileウィジェットをリセット
-    if (window.turnstile) {
-      window.turnstile.reset();
-    }
-  });
+  if (btnReset) {
+    btnReset.addEventListener('click', () => {
+      inputPassword.value = '';
+      inputNote.value = '';
+      updateNoteCharCount();
+      resetImageSelection();
+      resultBox.style.display = 'none';
+      secretForm.style.display = 'block';
+      // Turnstileウィジェットをリセット
+      if (window.turnstile) {
+        window.turnstile.reset();
+      }
+    });
+  }
 });

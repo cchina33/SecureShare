@@ -1,13 +1,13 @@
 /**
  * GET /api/image/:id
- * 暗号化画像バイナリとメタデータを取得し、ワンタイム閲覧モードの場合は即座に完全物理削除する
+ * 暗号化画像バイナリとメタデータを取得し、ワンタイム閲覧モードの場合は即座に削除する
  */
 
 export async function onRequestGet(context) {
   const { params, env } = context;
   const imageId = params.id;
 
-  // 1. バインディングの存在確認
+  // バインディングの存在確認
   if (!env.DB) {
     return new Response(
       JSON.stringify({ error: 'データベース設定 (DB) が見つかりません。' }),
@@ -30,7 +30,7 @@ export async function onRequestGet(context) {
   }
 
   try {
-    // 2. D1 から画像メタデータを取得
+    // 1 から画像メタデータを取得
     const record = await env.DB.prepare(
       `SELECT iv, mime_type, file_size, expires_at, burn_after_read FROM images WHERE id = ?`
     )
@@ -46,7 +46,7 @@ export async function onRequestGet(context) {
 
     const now = Date.now();
 
-    // 3. 有効期限切れチェック
+    // 有効期限切れチェック
     if (record.expires_at < now) {
       // 期限切れデータを D1 および R2 から削除
       await Promise.allSettled([
@@ -60,7 +60,7 @@ export async function onRequestGet(context) {
       );
     }
 
-    // 4. R2 から暗号化画像バイナリを取得
+    // R2 から暗号化画像バイナリを取得
     const r2Object = await env.MY_BUCKET.get(imageId);
     if (!r2Object) {
       // データ整合性エラー（D1にのみ存在しR2から消失している場合）
@@ -71,7 +71,7 @@ export async function onRequestGet(context) {
       );
     }
 
-    // 5. 【消去モード判定】ワンタイム閲覧（burn_after_read === 1）の場合は即座に完全物理削除
+    // 【消去モード判定】ワンタイム閲覧（burn_after_read === 1）の場合は即座に完全物理削除
     const isOneTime = record.burn_after_read === 1 || record.burn_after_read === null;
     if (isOneTime) {
       // R2 と D1 から同時に完全削除
@@ -81,7 +81,7 @@ export async function onRequestGet(context) {
       ]);
     }
 
-    // 6. 暗号化バイナリとメタデータヘッダーを返却
+    // 暗号化バイナリとメタデータヘッダーを返却
     const headers = new Headers();
     headers.set('Content-Type', 'application/octet-stream');
     headers.set('X-Iv', record.iv);
@@ -92,6 +92,7 @@ export async function onRequestGet(context) {
     headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
     headers.set('Pragma', 'no-cache');
     headers.set('Expires', '0');
+    
     // クライアント側 fetch からカスタムヘッダーを読み取り可能にする
     headers.set('Access-Control-Expose-Headers', 'X-Iv, X-Mime-Type, X-File-Size, X-Burn-After-Read, X-Expires-At');
 
