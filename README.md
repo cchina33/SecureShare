@@ -67,7 +67,6 @@
 - [アーキテクチャ設計書 (ARCHITECTURE.md)](docs/ARCHITECTURE.md): 暗号化の仕組み、セキュリティモデル、D1+R2ハイブリッドストレージの詳細解説
 - [API仕様書 (API.md)](docs/API.md): テキストおよび画像共有用バックエンドAPIエンドポイントのリファレンス
 - [本番デプロイ手順書 (DEPLOYMENT.md)](docs/DEPLOYMENT.md): Cloudflare環境（Pages, D1, R2）への本番公開完全マニュアル
-- [画像共有機能 開発記録 (docs/encrypted_image_sharing/)](docs/encrypted_image_sharing/): 暗号化画像共有機能の開発タスク、実装計画、検証レポート
 
 ---
 
